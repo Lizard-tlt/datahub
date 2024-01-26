@@ -984,6 +984,7 @@ class Mapper:
         report: powerbi_data_classes.Report,
         chart_mcps: List[MetadataChangeProposalWrapper],
         user_mcps: List[MetadataChangeProposalWrapper],
+        dataset_urns: List[str],
     ) -> List[MetadataChangeProposalWrapper]:
         """
         Map PowerBi report to Datahub dashboard
@@ -1005,6 +1006,7 @@ class Mapper:
             charts=chart_urn_list,
             lastModified=ChangeAuditStamps(),
             dashboardUrl=report.webUrl,
+            datasets=dataset_urns,
         )
 
         info_mcp = self.new_mcp(
@@ -1111,8 +1113,20 @@ class Mapper:
         ds_mcps = self.to_datahub_dataset(report.dataset, workspace)
         chart_mcps = self.pages_to_chart(report.pages, workspace, ds_mcps)
 
+        table_urns = (
+            [
+                builder.
+                make_dataset_urn_with_platform_instance(platform=self.__config.platform_name,
+                                                        name=self.assets_urn_to_lowercase(table.full_name),
+                                                        platform_instance=self.__config.platform_instance,
+                                                        env=self.__config.env,
+                                                        )
+                for table in report.dataset.tables
+            ] if report.dataset else [])
+
         # Let's convert report to datahub dashboard
-        report_mcps = self.report_to_dashboard(workspace, report, chart_mcps, user_mcps)
+        report_mcps = self.report_to_dashboard(
+            workspace, report, chart_mcps, user_mcps, table_urns)
 
         # Now add MCPs in sequence
         mcps.extend(ds_mcps)

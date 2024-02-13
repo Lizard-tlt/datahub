@@ -65,7 +65,7 @@ public class DatasetExtractor {
   private static final String TABLE_HIVE_PLATFORM_ALIAS = "metadata.table.hive_platform_alias";
   private static final String INCLUDE_SCHEME_KEY = "metadata.include_scheme";
   private static final String REMOVE_PARTITION_PATTERN = "metadata.remove_partition_pattern";
-
+private static final String MW_TABLE_HIVE_CATALOG_ALIAS = "mars.metadata.table.hive_catalog";
   // TODO InsertIntoHiveDirCommand, InsertIntoDataSourceDirCommand
 
   private DatasetExtractor() {}

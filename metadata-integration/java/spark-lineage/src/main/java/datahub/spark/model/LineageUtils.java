@@ -1,5 +1,6 @@
 package datahub.spark.model;
 
+import com.google.common.hash.Hashing;
 import com.linkedin.common.FabricType;
 import com.linkedin.common.urn.DataFlowUrn;
 import com.linkedin.common.urn.DataPlatformUrn;
@@ -9,6 +10,7 @@ import com.linkedin.common.urn.Urn;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -92,7 +94,8 @@ public class LineageUtils {
   public static DatasetUrn createDatasetUrn(
       String platform, String platformInstance, String name, FabricType fabricType) {
     String datasteName = platformInstance == null ? name : platformInstance + "." + name;
-    return new DatasetUrn(new DataPlatformUrn(platform), datasteName, fabricType);
+    return new DatasetUrn(
+        new DataPlatformUrn(platform), datasteName.replaceFirst("null", ""), fabricType);
   }
 
   /* This is for generating urn from a hash of the plan */
@@ -110,9 +113,8 @@ public class LineageUtils {
    *
    * public static void setPathReplacer(Function<String, String> replacer) {
    * PATH_REPLACER = replacer; }
-   *
-   * public static String hash(String s) { s = PATH_REPLACER.apply(s);
-   * log.debug("PATH REPLACED " + s); return Hashing.md5().hashString(s,
-   * Charset.forName("US-ASCII")).toString(); }
    */
+  public static String hash(String s) {
+    return Hashing.md5().hashString(s, Charset.forName("US-ASCII")).toString();
+  }
 }

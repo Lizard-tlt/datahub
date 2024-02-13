@@ -1,5 +1,6 @@
 package datahub.spark.model;
 
+import com.google.common.base.Joiner;
 import com.linkedin.common.DatasetUrnArray;
 import com.linkedin.common.urn.DataFlowUrn;
 import com.linkedin.common.urn.DataJobUrn;
@@ -14,6 +15,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -22,6 +24,8 @@ import lombok.ToString;
 public class SQLQueryExecStartEvent extends LineageEvent {
   private final long sqlQueryExecId;
   private final DatasetLineage datasetLineage;
+  private final boolean useHashUrn;
+  private final String jobName;
 
   public SQLQueryExecStartEvent(
       String master,
@@ -29,10 +33,14 @@ public class SQLQueryExecStartEvent extends LineageEvent {
       String appId,
       long time,
       long sqlQueryExecId,
-      DatasetLineage datasetLineage) {
+      DatasetLineage datasetLineage,
+      boolean useHashUrn,
+      String jobName) {
     super(master, appName, appId, time);
     this.sqlQueryExecId = sqlQueryExecId;
     this.datasetLineage = datasetLineage;
+    this.useHashUrn = useHashUrn;
+    this.jobName = jobName;
   }
 
   @Override
@@ -59,20 +67,22 @@ public class SQLQueryExecStartEvent extends LineageEvent {
         .setType(DataJobInfo.Type.create("sparkJob"));
   }
 
-  DataJobUrn jobUrn() {
+  public DataJobUrn jobUrn() {
     /* This is for generating urn from a hash of the plan */
-    /*
-     * Set<String> sourceUrns = datasetLineage.getSources() .parallelStream() .map(x
-     * -> x.urn().toString()) .collect(Collectors.toSet()); sourceUrns = new
-     * TreeSet<>(sourceUrns); //sort for consistency
-     *
-     * String sinkUrn = datasetLineage.getSink().urn().toString(); String plan =
-     * LineageUtils.scrubPlan(datasetLineage.getPlan()); String id =
-     * Joiner.on(",").join(sinkUrn, sourceUrns, plan);
-     *
-     * return new DataJobUrn(flowUrn(), "planHash_" + LineageUtils.hash(id));
-     */
-    return new DataJobUrn(flowUrn(), "QueryExecId_" + sqlQueryExecId);
+    if (this.useHashUrn) {
+      Set<String> sourceUrns =
+          datasetLineage.getSources().parallelStream()
+              .map(x -> x.urn().toString())
+              .collect(Collectors.toSet());
+      sourceUrns = new TreeSet<>(sourceUrns); // sort for consistency
+
+      String sinkUrn = datasetLineage.getSink().urn().toString();
+      // String plan = LineageUtils.scrubPlan(datasetLineage.getPlan());
+      String id = Joiner.on(",").join(sinkUrn, sourceUrns /*, plan*/);
+      return new DataJobUrn(flowUrn(), "Hash_" + LineageUtils.hash(id));
+    } else {
+      return new DataJobUrn(flowUrn(), "QueryExecId_" + sqlQueryExecId);
+    }
   }
 
   DataFlowUrn flowUrn() {

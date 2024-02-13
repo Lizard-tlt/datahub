@@ -65,7 +65,8 @@ public class DatasetExtractor {
   private static final String TABLE_HIVE_PLATFORM_ALIAS = "metadata.table.hive_platform_alias";
   private static final String INCLUDE_SCHEME_KEY = "metadata.include_scheme";
   private static final String REMOVE_PARTITION_PATTERN = "metadata.remove_partition_pattern";
-private static final String MW_TABLE_HIVE_CATALOG_ALIAS = "mars.metadata.table.hive_catalog";
+  private static final String MW_TABLE_HIVE_CATALOG_ALIAS = "mars.metadata.table.hive_catalog";
+
   // TODO InsertIntoHiveDirCommand, InsertIntoDataSourceDirCommand
 
   private DatasetExtractor() {}
@@ -201,7 +202,8 @@ private static final String MW_TABLE_HIVE_CATALOG_ALIAS = "mars.metadata.table.h
                       cmd.table(),
                       getCommonPlatformInstance(datahubConfig),
                       getTableHivePlatformAlias(datahubConfig),
-                      getCommonFabricType(datahubConfig))));
+                      getCommonFabricType(datahubConfig),
+                      getHiveCatalogAlias(datahubConfig))));
         });
     PLAN_TO_DATASET.put(
         CreateHiveTableAsSelectCommand.class,
@@ -213,7 +215,8 @@ private static final String MW_TABLE_HIVE_CATALOG_ALIAS = "mars.metadata.table.h
                       cmd.tableDesc(),
                       getCommonPlatformInstance(datahubConfig),
                       getTableHivePlatformAlias(datahubConfig),
-                      getCommonFabricType(datahubConfig))));
+                      getCommonFabricType(datahubConfig),
+                      getHiveCatalogAlias(datahubConfig))));
         });
     PLAN_TO_DATASET.put(
         InsertIntoHiveTable.class,
@@ -225,7 +228,8 @@ private static final String MW_TABLE_HIVE_CATALOG_ALIAS = "mars.metadata.table.h
                       cmd.table(),
                       getCommonPlatformInstance(datahubConfig),
                       getTableHivePlatformAlias(datahubConfig),
-                      getCommonFabricType(datahubConfig))));
+                      getCommonFabricType(datahubConfig),
+                      getHiveCatalogAlias(datahubConfig))));
         });
 
     PLAN_TO_DATASET.put(
@@ -238,7 +242,8 @@ private static final String MW_TABLE_HIVE_CATALOG_ALIAS = "mars.metadata.table.h
                       cmd.tableMeta(),
                       getCommonPlatformInstance(datahubConfig),
                       getTableHivePlatformAlias(datahubConfig),
-                      getCommonFabricType(datahubConfig))));
+                      getCommonFabricType(datahubConfig),
+                      getHiveCatalogAlias(datahubConfig))));
         });
 
     REL_TO_DATASET.put(
@@ -378,6 +383,12 @@ private static final String MW_TABLE_HIVE_CATALOG_ALIAS = "mars.metadata.table.h
   private static String getRemovePartitionPattern(Config datahubConfig) {
     return datahubConfig.hasPath(REMOVE_PARTITION_PATTERN)
         ? datahubConfig.getString(REMOVE_PARTITION_PATTERN)
+        : null;
+  }
+
+  private static String getHiveCatalogAlias(Config datahubConfig) {
+    return datahubConfig.hasPath(MW_TABLE_HIVE_CATALOG_ALIAS)
+        ? datahubConfig.getString(MW_TABLE_HIVE_CATALOG_ALIAS)
         : null;
   }
 }

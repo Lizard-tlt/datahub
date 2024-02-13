@@ -380,7 +380,7 @@ public class DatahubSparkListener extends SparkListener {
                   SQLQueryExecEndEvent evt =
                       new SQLQueryExecEndEvent(
                           LineageUtils.getMaster(sc),
-                          sc.appName(),
+                          getPipelineName(sc),
                           sc.applicationId(),
                           sqlEnd.time(),
                           sqlEnd.executionId(),

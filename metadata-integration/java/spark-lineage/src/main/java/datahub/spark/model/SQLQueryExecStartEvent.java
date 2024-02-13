@@ -63,7 +63,7 @@ public class SQLQueryExecStartEvent extends LineageEvent {
 
   DataJobInfo jobInfo() {
     return new DataJobInfo()
-        .setName(datasetLineage.getCallSiteShort())
+        .setName(this.jobName.equals("") ? datasetLineage.getCallSiteShort() : this.jobName)
         .setType(DataJobInfo.Type.create("sparkJob"));
   }
 

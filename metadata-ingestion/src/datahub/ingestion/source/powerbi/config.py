@@ -156,7 +156,7 @@ class SupportedDataPlatform(Enum):
     )
 
     DATABRICK_SQL = DataPlatformPair(
-        powerbi_data_platform_name="Databricks", datahub_data_platform_name="databricks"
+        powerbi_data_platform_name="Databricks", datahub_data_platform_name="hive"
     )
 
 

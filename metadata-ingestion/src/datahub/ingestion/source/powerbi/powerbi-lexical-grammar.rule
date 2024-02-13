@@ -9,7 +9,7 @@
 
 lexical_unit:   lexical_elements?
 
-lexical_elements:   lexical_element 
+lexical_elements:   lexical_element
                 |   lexical_elements?
 
 lexical_element:    whitespace
@@ -28,7 +28,7 @@ comment:    single_line_comment
 
 single_line_comment:    single_line_comment_characters?
 
-single_line_comment_characters: single_line_comment_character 
+single_line_comment_characters: single_line_comment_character
                             |   single_line_comment_characters?
 
 single_line_comment_character: CPP_COMMENT
@@ -85,7 +85,7 @@ decimal_digit: /\d+/
 hexadecimal_number_literal: "0x" hex_digits
                         |   "0X" hex_digits
 
-hex_digits: hex_digit 
+hex_digits: hex_digit
         |   hex_digits?
 
 hex_digit: HEXDIGIT
@@ -102,7 +102,7 @@ sign: ["+"|"-"]
 
 text_literal:   ESCAPED_STRING
 
-text_literal_characters:    text_literal_character 
+text_literal_characters:    text_literal_character
                     |       text_literal_characters?
 
 text_literal_character:     single_text_character
@@ -164,40 +164,40 @@ decimal_digit_character: /[\p{Nd}]+/
 connecting_character:   /[\p{Pc}]+/
 
 formatting_character:   /[\p{Cf}]+/
-      
+
 quoted_identifier:      "#" ESCAPED_STRING
 
 keyword:    "and"
         |   "as"
         |   "each"
         |   "else"
-        |   "error" 
+        |   "error"
         |   "false"
         |   "if"
         |   "in"
-        |   "is" 
+        |   "is"
         |   "let"
         |   "meta"
-        |   "not" 
+        |   "not"
         |   "null"
         |   "or"
         |   "otherwise"
         |   "section"
         |   "shared"
-        |   "then" 
+        |   "then"
         |   "true"
-        |   "try" 
-        |   "type" 
+        |   "try"
+        |   "type"
         |   "#binary"
-        |   "#date" 
+        |   "#date"
         |   "#datetime"
         |   "#datetimezone"
         |   "#duration"
         |   "#infinity"
-        |   "#nan" 
-        |   "#sections" 
-        |   "#shared" 
-        |   "#table" 
+        |   "#nan"
+        |   "#sections"
+        |   "#shared"
+        |   "#table"
         |   "#time"
 
 
@@ -207,24 +207,24 @@ operator_or_punctuator: ","
                     |   "<"
                     |   "<="
                     |   ">"
-                    |   ">=" 
+                    |   ">="
                     |   "<>"
-                    |   "+" 
-                    |   "_" 
-                    |   "*" 
+                    |   "+"
+                    |   "_"
+                    |   "*"
                     |   "/"
                     |   "&"
-                    |   "(" 
-                    |   ")" 
-                    |   "[" 
-                    |   "]" 
-                    |   "{" 
-                    |   "}" 
-                    |   "@" 
-                    |   "?" 
-                    |   "??" 
-                    |   "=>" 
-                    |   ".." 
+                    |   "("
+                    |   ")"
+                    |   "["
+                    |   "]"
+                    |   "{"
+                    |   "}"
+                    |   "@"
+                    |   "?"
+                    |   "??"
+                    |   "=>"
+                    |   ".."
                     |   "..."
 
 document:   section_document
@@ -232,17 +232,17 @@ document:   section_document
 
 section_document:   section
 
-section:    literal_attributes? 
-        |   section 
+section:    literal_attributes?
+        |   section
         |   section_name ";" section_members?
 
 section_name:   identifier
 
-section_members: section_member 
+section_members: section_member
             |    section_members?
 
-section_member: literal_attributes? 
-            |   "shared"? 
+section_member: literal_attributes?
+            |   "shared"?
             |   section_member_name "=" expression ";"
 
 section_member_name:    identifier
@@ -256,18 +256,20 @@ expression: logical_or_expression
       |     if_expression
       |     error_raising_expression
       |     error_handling_expression
+      |     expression "-" expression
+      |     expression "+" expression
 
 logical_or_expression:  logical_and_expression
                     |   logical_and_expression "or" logical_or_expression
 
 logical_and_expression: WS_INLINE? NEWLINE? is_expression WS_INLINE? NEWLINE?
                     |   WS_INLINE?
-                    |   NEWLINE?     
+                    |   NEWLINE?
                     |   logical_and_expression WS_INLINE? "and" WS_INLINE? is_expression
 
 is_expression:  as_expression
             |   WS_INLINE?
-            |   NEWLINE?     
+            |   NEWLINE?
             |   is_expression "is" nullable_primitive_type
 
 nullable_primitive_type:    "nullable"? primitive_type
@@ -297,8 +299,8 @@ multiplicative_expression:  WS_INLINE? metadata_expression
                         |   metadata_expression "/" multiplicative_expression
 
 metadata_expression:    unary_expression
-                |       unary_expression 
-                |       "meta" 
+                |       unary_expression
+                |       "meta"
                 |       unary_expression
 
 unary_expression:   type_expression
@@ -469,23 +471,23 @@ primary_type:   primitive_type
             |   table_type
             |   nullable_type
 
-primitive_type: "any" 
+primitive_type: "any"
             |   "anynonnull"
             |   "binary"
-            |   "date" 
-            |   "datetime" 
-            |   "datetimezone" 
-            |   "duration" 
+            |   "date"
+            |   "datetime"
+            |   "datetimezone"
+            |   "duration"
             |   "function"
-            |   "list" 
-            |   "logical" 
-            |   "none" 
-            |   "null" 
-            |   "number" 
-            |   "record" 
-            |   "table" 
-            |   "text" 
-            |   "time" 
+            |   "list"
+            |   "logical"
+            |   "none"
+            |   "null"
+            |   "number"
+            |   "record"
+            |   "table"
+            |   "text"
+            |   "time"
             |   "type"
 
 record_type:      "[" WS_INLINE? open_record_marker WS_INLINE? "]"

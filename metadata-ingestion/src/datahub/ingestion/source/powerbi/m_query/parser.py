@@ -55,6 +55,7 @@ def _parse_expression(expression: str) -> Tree:
     # Sometimes PowerBI returns expressions with this character and it breaks the parser.
     expression = expression.replace("\u00a0", " ")
     expression = remove_comments(expression)
+    expression = expression.replace("\n]", "]")
 
     logger.debug(f"Parsing expression = {expression}")
     parse_tree: Tree = lark_parser.parse(expression)

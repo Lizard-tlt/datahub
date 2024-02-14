@@ -1,6 +1,7 @@
 import functools
 import importlib.resources as pkg_resource
 import logging
+import re
 from typing import Dict, List
 
 import lark
@@ -33,12 +34,27 @@ def get_lark_parser() -> Lark:
     return Lark(grammar, start="let_expression", regex=True)
 
 
+def remove_comments(text: str) -> str:
+    def replacer(match):
+        s = match.group(0)
+        if s.startswith('/'):
+            return " "  # note: a space and not an empty string
+        else:
+            return s
+    pattern = re.compile(
+        r'//.*?$|/\*.*?\*/|\'(?:\\.|[^\\\'])*\'|"(?:\\.|[^\\"])*"',
+        re.DOTALL | re.MULTILINE
+    )
+    return re.sub(pattern, replacer, text).strip()
+
+
 def _parse_expression(expression: str) -> Tree:
     lark_parser: Lark = get_lark_parser()
 
     # Replace U+00a0 NO-BREAK SPACE with a normal space.
     # Sometimes PowerBI returns expressions with this character and it breaks the parser.
     expression = expression.replace("\u00a0", " ")
+    expression = remove_comments(expression)
 
     logger.debug(f"Parsing expression = {expression}")
     parse_tree: Tree = lark_parser.parse(expression)
